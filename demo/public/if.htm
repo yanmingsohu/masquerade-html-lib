@@ -1,0 +1,29 @@
+<slice define='body'>
+
+<div>
+###query###
+</div>
+<a href='if.htm?a=0'>not set</a>
+<a href='if.htm?a=1'>set</a>
+
+<br/><br/><br/><br/>
+<div>
+  <span>if query.a is set display this:<span>
+  <if var='query.a'>
+    <h1>query.a is set!</h1>
+  </if>
+</div>
+
+<br/><br/><br/><br/>
+<div>
+  <span>if query.a not set display this:<span>
+  <if var='query.a' not='true'>
+    <h1>query.a is not set!</h1>
+  </if>
+</div>
+
+
+
+</slice>
+
+<include src='template.htm'/>

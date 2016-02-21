@@ -1,0 +1,38 @@
+<slice define='body'>
+	<h1>Demo server script</h1>
+
+	<create to="obj" a='1' b='2' c='3' 
+   jquery_cdn-s='http://lib.sinaapp.com/js/jquery/1.7.2/jquery.min.js'/>
+
+	<for from='obj' save='o' index='i'>
+		<div>//  循环中的脚本</div>
+		<script runat='server'>
+			log.log(Array, String, Object, 'JSON:', JSON);
+			write('hello script ');
+	    write(val('o'))
+			end();
+		</script>
+
+	</for>
+
+<br/>
+
+
+	<div>CDN:::###obj.jquery_cdn###</div>
+	<!-- <script src='###obj.jquery_cdn###'/> -->
+
+  <!-- 这个脚本会写出一些字符到页面 -->
+  <script runat='server' src='demo.js'/>
+  <div id='cc'>over</div>
+
+  <script src='images/jquery-2.0.3.min.js'/>
+
+  <script>
+  document.getElementById('cc').innerHTML = 'This is Script on client';
+  </script>
+
+
+</slice>
+
+<include src='template.htm'/>
+

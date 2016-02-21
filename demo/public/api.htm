@@ -1,0 +1,26 @@
+<slice define='body'>
+	<div>begin</div>
+
+	<slice define='api'>
+	  <api url='http://www.baidu.com' to='api1ret' type='txt' method='get'/>
+  <div>
+    <h1>baidu</h1>
+    <textarea style='width: 90%; height: 300px'>
+    ### api1ret ###
+    </textarea>
+  </div>
+	</slice>
+
+	<wait a='1'>abc</wait>
+	<slice ref='api'/>
+
+	<div>over</div>
+
+  <api url='http://www.facebook.com' to='api1ret' type='txt' method='get'/>
+</slice>
+
+
+<include src='template.htm'/>
+
+
+

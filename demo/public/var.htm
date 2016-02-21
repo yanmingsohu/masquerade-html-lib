@@ -1,0 +1,37 @@
+<slice define='body'>
+  <style type="text/css">
+  .backcolor {
+    background-color: red;
+  }
+  </style>
+
+  <h1>Demo Var</h1>
+
+  <div>复杂表达式: ###nextId()###</div>
+  ###1>=2###, ###1<=2###, ###1+1==2###, 
+
+  <!-- 不允许赋值运算 ###1=2### -->
+
+  <create to='obj' name-s='myobject' id-i='100' 
+          money-f='101.11' obj-e='yes' class-s='backcolor'/>
+  <div>
+  create: '### obj ###'
+  </div>
+
+  <set to='obj' attr='money' value='200.11'/>
+  <div class='### obj.class ###'>
+  modify: '### obj ###'; 通过表达式传递属性, 这一行是红色
+  </div>
+
+  <del to='obj'/>
+  <div>
+  del: '### obj ###'
+  </div>
+
+  <set to='obj' attr='money' value='200.11'/>
+  <div>
+  set 'null': '### obj ###'
+  </div>
+</slice>
+
+<include src='template.htm'/>

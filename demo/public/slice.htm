@@ -1,0 +1,38 @@
+<slice define='body'>
+
+    <h1>Demo Slice</h1>
+
+  <slice define='test'>
+    <div>tid: ###tid###</div>
+
+    <slice define='in'>
+      <div>world</div>
+      <!-- <div>wait....</div> -->
+      <!-- <wait>...ok in</wait> -->
+    </slice>
+
+    <slice define='in2'>
+      <div>hello</div>
+      <!-- <div>wait....</div> -->
+      <!-- <wait>...ok in2</wait> -->
+      <!-- <div>这是一个循环引用, 会抛出异常</div> -->
+      <!-- <slice ref='test'/> -->
+   </slice>
+
+  <div>wait....</div>
+  <wait>...ok</wait>
+  </slice>
+
+  <slice define='test' noerror='1'>
+    这是一个重复定义, 但不会抛出异常
+  </slice>
+
+
+  <slice ref='test' tid='this is from ref attr'/>
+  <slice ref='test'/>
+  <slice ref='in'/>
+  <slice ref='in2'/>
+  <slice ref='noneref' noerror='1'/> <!-- 引用不存在的片段, 但不抛出异常 -->
+</slice>
+
+<include src='template.htm'/>

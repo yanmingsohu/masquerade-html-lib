@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+  <if var='display'>
+     world 这里会被隐藏 
+  </if>
+
+  <for from="array" save='item' index='i'>
+    <slice to='drawdog'>
+      <for from="array" save='item' index='i'>
+        <div> This is Dog! </div>
+      </for>
+    </slice>
+  </for>
+
+  <for from="array1" save='item' index='i'>
+    <div> save: ###item### <br/> index: ###i### <br/> </div>
+    <span>LOG: <include src='error.log'/> </span>
+  </for>
+
+if oooo fi
+  <if var='not'>
+   <include src='index.js' private='true'/>
+  </if>
+if oooo fi
+
+  <for from="array" save='item' index='i'>
+    !!- <slice from='drawdog'/> -!!   ###array###
+        o
+  </for>
+
+
+  <!-- 上下文中有 yes 对象 -->
+  <set to='array' attr='3' value='yes' exp='true'/>
+
+  <!-- 修改系统变量会抛出异常 -->
+  <!--<set to='tag_scope' attr='3' value='yes' exp='true'/>-->
+
+  <for from="array" save='itemi' index='ii'>
+    <div> save: ###itemi### <br/> index: ###ii### <br/> </div>
+
+    <for from="array" save='itemin' index='iin'>
+      <div> save: ###itemin### <br/> index: ###iin### <br/> </div>
+    </for>
+    <slice from='drawdog'/>
+    xxx for ending
+  </for>### ohh ###
+
+  <create to='ohh' name-s='myobject' id-i='100', money-f='101.11' obj-e='yes'/>
+  <div>
+    ### ohh ###
+  </div>
+
+  <div>
+    <h1>baidu</h1>
+    ### api1ret ###
+  </div>
+  
+
+
+</html>

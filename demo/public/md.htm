@@ -1,0 +1,38 @@
+<slice define='body'>
+  <h3>Markdown Test</h3>
+
+  <markdown wcss='1' trim='true'>
+    # Title 1
+    
+    some text **Blod**, *Italic*
+
+    ## Title 2
+    ```js
+    var a='java script text'
+    ```
+
+    ##\# Title 3
+    > note line 1,
+    > note line 2,
+
+    ##\## Title 4
+    * sequence 1
+    * sequence 2
+    * sequence 3
+
+    ##\##\# Title 5
+
+    > Text **blod**
+
+    ##\##\## Title 6
+
+    > some
+
+    ##\##\##\# Title 7 not support
+
+    > some
+
+  </markdown>
+</slice>
+
+<include src='template.htm'/>

@@ -1,0 +1,362 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>html5 simple chess</title>
+    <style type="text/css">
+        .cur
+        {
+            margin: 0px 0px 0px 0px;
+            width: 610px;
+            height: 610px;
+            cursor: url('images/bb.cur'),auto;
+        }
+        .cur1
+        {
+            cursor: auto;
+        }
+        div
+        {
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body onload="Init()">
+    <div class="cur" id="divCanvas">
+        <canvas id="myCanvas" width="610px;" height="610px">
+		你的浏览器不支持html5,请使用火狐\谷歌等浏览器
+		</canvas>
+    </div>
+    <div style="position: absolute; top: 60px; left: 700px;">
+        规则:玩家是白子,电脑是黑子,白子先走.<br />
+        同一颜色在左右,上下,左上右下,左下右上任一方向上5子连成一线即胜利.
+    </div>
+    <script type="text/javascript">
+        var divCanvas = document.getElementById("divCanvas");
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d"); //注意2d一定是小写
+        var locations = new Array(15); //保存棋盘各点状态 [0空,1白子,2黑子]
+        var imgComputer = new Image();
+        imgComputer.src = "images/black.png"; //黑棋子 -电脑
+
+        var imgPlayer = new Image();
+        imgPlayer.src = "images/white.png"; //白棋子 --玩家
+        var pointX, pointY; //落子X,Y坐标
+
+        var isComputerRunning = false; //电脑是否正在下
+        canvas.addEventListener("click", OnClick, false);
+
+        var locationX, locationY; //落子所在数组下标
+        var directionLRCount = 0, directionUDCount = 0, directionLURDCount = 0, directionLDRUCount = 0; //分别 表示左右\上下\左上右下\左下右上方向棋子数
+        var count = 0; //某方向上棋子数
+        var computer = 2; //电脑值  用于存储在locations中
+        var player = 1; //玩家值  用于存储在locations中
+        //以下属性用于计算电脑落子处
+        var maxCount = 0; //最大棋子数
+        var directionLRPointXL, directionLRPointY, directionLRPointXR; //左右方向最左坐标,最右坐标
+        var directionUDPointX, directionUDPointYU, directionUDPointYD; //上下方向最上面坐标,最下坐标
+        var directionLURDPointXL, directionLURDPointYU, directionLURDPointXR, directionLURDPointYD; //左上右下方向左上坐标右下坐标
+        var directionLDRUPointXL, directionLDRUPointYD, directionLDRUPointXR, directionLDRUPointYU;  //左下右上方向
+
+        var horizontalLineNum = 15, verticalLineNum = 15; //横线数量,纵线数量
+        //玩家落子
+        function OnClick(evt) {
+            if (isComputerRunning) {
+                alert("请稍等,电脑正在想怎么下!");
+                return;
+            }
+            locationX = parseInt((evt.layerX - 9) / 40);
+            locationY = parseInt((evt.layerY - 9) / 40);
+
+            if (locations[locationX][locationY] == 0) {
+                locations[locationX][locationY] = player;
+                //画棋子
+                DrawImg(locationX, locationY, player);
+            }
+            if (IsWin(locationX, locationY, player)) {
+                DrawWin(player);
+                alert("player is win");
+                return;
+                //结束
+            }
+
+
+            //电脑下
+            isComputerRunning = true;
+            if (ComputerRun(locationX, locationY)) {
+
+            } else {
+                alert("computer is fail");
+                //结束
+            }
+            isComputerRunning = false;
+        }
+        //画棋子,    X轴下标,Y轴下标,角色(1玩家\2电脑)
+        function DrawImg(locationX, locationY, role) {
+            pointX = 9 + 40 * (locationX);
+            pointY = 9 + 40 * (locationY);
+
+            if (role == player) {
+                ctx.drawImage(imgPlayer, pointX, pointY)
+            } else { ctx.drawImage(imgComputer, pointX, pointY) }
+        }
+        /*
+        *   电脑画棋子,并判断是否已经胜利
+        */
+        function ComputerDraw(locationX, locationY) {
+            DrawImg(locationX, locationY, computer);
+
+            if (IsWin(locationX, locationY, computer)) {
+                DrawWin(computer);
+                alert("computer is win");
+                //结束
+            }
+        }
+        /*
+        *计算电脑落子处   X轴下标,Y轴下标 
+        *   首先将四个方向棋子数从大到小排列
+        *   再按左右\上下\左上右下\左下右上的优先级计算落子处
+        */
+        function ComputerRun(locationX, locationY) {
+            var countArray = new Array(4); //用与计算落子方向优先级
+            var role = player; //表示玩家
+            //左右
+            directionLRPointXL = locationX;
+            directionLRPointXR = locationX;
+            directionLRPointY = locationY;
+            directionLRCount = 0;
+            for (var i = locationX; i >= 0; i--) {
+                if (locations[i][locationY] == role) {
+                    directionLRCount++;
+                    directionLRPointXL = i;
+                } else { break; }
+            }
+            for (var i = locationX + 1; i < verticalLineNum; i++) {
+                if (locations[i][locationY] == role) {
+                    directionLRCount++;
+                    directionLRPointXR = i;
+                } else { break; }
+            }
+            countArray[0] = directionLRCount;
+
+            //上下
+            directionUDPointX = locationX;
+            directionUDPointYU = locationY;
+            directionUDPointYD = locationY;
+            directionUDCount = 0;
+            for (var i = locationY; i >= 0; i--) {
+                if (locations[locationX][i] == role) {
+                    directionUDCount++;
+                    directionUDPointYU = i;
+                } else { break; }
+            }
+            for (var i = locationY + 1; i < horizontalLineNum; i++) {
+                if (locations[locationX][i] == role) {
+                    directionUDCount++;
+                    directionUDPointYD = i;
+                } else { break; }
+            }
+            countArray[1] = directionUDCount;
+
+            //左上右下
+            directionLURDPointXL = locationX;
+            directionLURDPointXR = locationX;
+            directionLURDPointYU = locationY;
+            directionLURDPointYD = locationY;
+            directionLURDCount = 0;
+            for (var i = locationX, j = locationY; i >= 0 && j >= 0; i--, j--) {
+                if (locations[i][j] == role) {
+                    directionLURDCount++;
+                    directionLURDPointXL = i;
+                    directionLURDPointYU = j;
+                } else { break; }
+            }
+            for (var i = locationX + 1, j = locationY + 1; i < verticalLineNum && j < horizontalLineNum; i++, j++) {
+                if (locations[i][j] == role) {
+                    directionLURDCount++;
+                    directionLURDPointXR = i;
+                    directionLURDPointYD = j;
+                } else { break; }
+            }
+            countArray[2] = directionLURDCount;
+
+            //左下右上
+            directionLDRUPointXL = locationX;
+            directionLDRUPointXR = locationX;
+            directionLDRUPointYU = locationY;
+            directionLDRUPointYD = locationY;
+            directionLDRUCount = 0;
+            for (var i = locationX, j = locationY; i >= 0 && j < horizontalLineNum; i--, j++) {
+                if (locations[i][j] == role) {
+                    directionLDRUCount++;
+                    directionLDRUPointXL = i;
+                    directionLDRUPointYD = j;
+                } else { break; }
+            }
+            for (var i = locationX + 1, j = locationY - 1; i < verticalLineNum && j >= 0; i++, j--) {
+                if (locations[i][j] == role) {
+                    directionLDRUCount++;
+                    directionLDRUPointXR = i;
+                    directionLDRUPointYU = j;
+                } else { break; }
+            }
+            countArray[3] = directionLDRUCount;
+
+            countArray.sort(function (a, b) { return a < b ? 1 : -1; }); //数组按从大到小排序
+
+            for (var i = 0; i < countArray.length; i++) {
+                //左右方向
+                if (countArray[i] == directionLRCount) {
+                    if (directionLRPointXL > 0 && locations[directionLRPointXL - 1][directionLRPointY] == 0) {
+                        locations[directionLRPointXL - 1][directionLRPointY] = computer;
+                        ComputerDraw(directionLRPointXL - 1, directionLRPointY);
+                        return true;
+                    }
+                    if (directionLRPointXR < horizontalLineNum - 1 && locations[directionLRPointXR + 1][directionLRPointY] == 0) {
+                        locations[directionLRPointXR + 1][directionLRPointY] = computer;
+                        ComputerDraw(directionLRPointXR + 1, directionLRPointY);
+                        return true;
+                    }
+                }
+                //上下方向
+                if (countArray[i] == directionUDCount) {
+                    if (directionUDPointYU > 0 && locations[directionUDPointX][directionUDPointYU - 1] == 0) {
+                        locations[directionUDPointX][directionUDPointYU - 1] = computer;
+                        ComputerDraw(directionUDPointX, directionUDPointYU - 1);
+                        return true;
+                    }
+                    if (directionUDPointYD < horizontalLineNum - 1 && locations[directionUDPointX][directionUDPointYD + 1] == 0) {
+                        locations[directionUDPointX][directionUDPointYD + 1] = computer;
+                        ComputerDraw(directionUDPointX, directionUDPointYD + 1);
+                        return true;
+                    }
+                }
+                //左上右下
+                if (countArray[i] == directionLURDCount) {
+                    if (directionLURDPointXL > 0 && directionLURDPointYU > 0 && locations[directionLURDPointXL - 1][directionLURDPointYU - 1] == 0) {
+                        locations[directionLURDPointXL - 1][directionLURDPointYU - 1] = computer;
+                        ComputerDraw(directionLURDPointXL - 1, directionLURDPointYU - 1);
+                        return true;
+                    }
+                    if (directionLURDPointXR < verticalLineNum - 1 && directionLURDPointYD < horizontalLineNum - 1 && locations[directionLURDPointXR + 1][directionLURDPointYD + 1] == 0) {
+                        locations[directionLURDPointXR + 1][directionLURDPointYD + 1] = computer;
+                        ComputerDraw(directionLURDPointXR + 1, directionLURDPointYD + 1);
+                        return true;
+                    }
+                }
+                //左下右上
+                if (countArray[i] == directionLDRUCount) {
+                    if (directionLDRUPointXL > 0 && directionLDRUPointYD < horizontalLineNum - 1 && locations[directionLDRUPointXL - 1][directionLDRUPointYD + 1] == 0) {
+                        locations[directionLDRUPointXL - 1][directionLDRUPointYD + 1] = computer;
+                        ComputerDraw(directionLDRUPointXL - 1, directionLDRUPointYD + 1);
+                        return true;
+                    }
+                    if (directionLDRUPointXR < verticalLineNum - 1 && directionLDRUPointYU > 0 && locations[directionLDRUPointXR + 1][directionLDRUPointYU - 1] == 0) {
+                        locations[directionLDRUPointXR + 1][directionLDRUPointYU - 1] = computer;
+                        ComputerDraw(directionLDRUPointXR + 1, directionLDRUPointYU - 1);
+                        return true;
+                    }
+                }
+            }
+
+            //走到这一步说明落子处四面都有子
+            alert("珍珑棋局??");
+            return false;
+        }
+        //是否已经五子练成一线,    X轴下标,Y轴下标,角色(1玩家\2电脑)
+        function IsWin(locationX, locationY, role) {
+            count = 0;
+            //左右 	
+            for (var i = locationX; i >= 0; i--) {
+                if (locations[i][locationY] == role)
+                { count++; } else { break; }
+            }
+            for (var i = locationX + 1; i < verticalLineNum; i++) {
+                if (locations[i][locationY] == role)
+                { count++; } else { break; }
+            }
+            if (count >= 5) { return true }
+            count = 0;
+            //上下	
+            for (var i = locationY; i >= 0; i--) {
+                if (locations[locationX][i] == role)
+                { count++; } else { break; }
+            }
+            for (var i = locationY + 1; i < horizontalLineNum; i++) {
+                if (locations[locationX][i] == role)
+                { count++; } else { break; }
+            }
+            if (count >= 5) { return true; }
+            count = 0;
+            //左上右下 	
+
+            for (var i = locationX, j = locationY; i >= 0 && j >= 0; i--, j--) {
+                if (locations[i][j] == role) {
+                    count++;
+                } else { break; }
+            }
+            for (var i = locationX + 1, j = locationY + 1; i < verticalLineNum && j < horizontalLineNum; i++, j++) {
+                if (locations[i][j] == role) {
+                    count++;
+                } else { break; }
+            }
+            if (count >= 5) { return true; }
+            count = 0;
+            //左下右上 	
+            for (var i = locationX, j = locationY; i >= 0 && j < horizontalLineNum; i--, j++) {
+                if (locations[i][j] == role)
+                { count++; } else { break; }
+            }
+            for (var i = locationX + 1, j = locationY + 1; i < verticalLineNum && j >= 0; i++, j--) {
+                if (locations[i][j] == role)
+                { count++; } else { break; }
+            }
+            if (count >= 5) { return true; }
+
+            return false;
+        }
+        //初始化 (画棋盘,初始化数组)
+        function Init() {
+            isComputerRunning = false;
+            for (var i = 0; i < horizontalLineNum; i++) {
+                //画横线
+                ctx.moveTo(0, 25 + 40 * i);
+                ctx.lineTo(650, 25 + 40 * i);
+
+                //初始化数组
+                locations[i] = new Array(verticalLineNum);
+                for (var j = 0; j < verticalLineNum; j++) {
+                    locations[i][j] = 0;
+                }
+            }
+            for (var i = 0; i < verticalLineNum; i++) {
+                //画纵线
+                ctx.moveTo(25 + 40 * i, 0);
+                ctx.lineTo(25 + 40 * i, 650);
+            }
+
+            ctx.stroke();
+        }
+        function DrawWin(role) {
+            ctx.clearRect(0, 0, 625, 625);
+            if (role == player) {
+                ctx.fillText("恭喜,你胜利了!", 270, 40);
+            } else {
+                ctx.fillText("你要加油了!", 270, 40);
+            }
+            ctx.beginPath();
+            ctx.arc(75, 75, 50, 0, Math.PI * 2, true); // Outer circle
+            ctx.moveTo(110, 75);
+            ctx.arc(75, 75, 35, 0, Math.PI, false);   // Mouth (clockwise)
+            ctx.moveTo(65, 65);
+            ctx.arc(60, 65, 5, 0, Math.PI * 2, true);  // Left eye
+            ctx.moveTo(95, 65);
+            ctx.arc(90, 65, 5, 0, Math.PI * 2, true);  // Right eye
+            ctx.stroke();
+
+
+            ctx.stroke();
+        } 
+    </script>
+</body>
+</html>

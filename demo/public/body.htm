@@ -1,0 +1,31 @@
+<slice define='body'>
+  <h3>含有标签体的自定义标签</h3>
+    <bb/>
+  <br/><br/>
+
+  <p>这里使用有标签体调用了 hasbody 标签:</p>
+  <hasbody wcss='1' trim='true'>
+    <create to='test' name-s='string' b-s='express' c-s='java' />
+    <create to='arr' a1-s='1' a2-s='2' a3-n='3' />
+    <p>[This is Insert Body, Print: ]</p>
+    <for from="test" save='b'  index='i'>
+      <span>{ ###i###:###b### }</span> 
+      <for from="arr" save='c'  index='i2'>
+        <span>{ ###i2###:###c### }</span>
+      </for>
+      <br/>
+    </for>
+  </hasbody>
+  <br/><br/>
+  
+  <p>[OVER Must not String:] <pit/> [END]</p>
+  <br/><br/>
+  
+  <p>这里无标签体调用了 hasbody 标签:</p>
+  <hasbody wcss='1' trim='true'/>
+  <br/><br/>
+  
+  <p>[OVER Must not String:] <pit/> [END]</p>
+</slice>
+
+<include src='template.htm'/>

@@ -1,0 +1,69 @@
+
+<slice define='body'>
+
+  <h1>Demo SQL</h1>
+
+
+  <!-- 利用标签创建配置, 更好的做法是自定义一个通用标签专门创建连接 -->
+  <create to='db_conf' 
+          driver-s='mysql' 
+          host-s='192.168.7.21' 
+          port-s='33066' 
+          user-s='connuser'
+          password-s='dalianzhirong321_A'
+          database-s='a297dfacd7a84eab9656675f61750078' />
+
+  <!-- 运行一个 js 脚本初始化配置对象, 在 private 目录中 -->
+  <!-- <script runat='server' src='db_conf.js'/> -->
+
+  <!-- 初始化的配置在 db_conf, 结果集存放入 sql_result -->
+  <sql conn='db_conf' to='sql_result'>
+    select * from test
+  </sql>
+
+
+  <!-- 通过表达式输出到页面 -->
+  <div>
+    <h3>Meta</h3>
+    ### sql_result.meta ###
+  </div>
+
+  <div>
+    <h3>Data</h3>
+    ### sql_result.data ###
+  </div>
+
+  <div>
+    <h3>Error</h3>
+    ### sql_result.error ###
+  </div>
+
+
+  <!-- 通过循环生成表格 -->
+  <div>
+    <h3>Table</h3>
+
+    <table style='width: 100%'>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>T3</th>
+          <th>typenm</th>
+        </tr>
+      </thead>
+      <tbody>
+        <for from="sql_result.data" save='row' index='i'>
+          <tr>
+            <td> ###row.typecd### </td> 
+            <td> ###row.T3### </td> 
+            <td> ###row.typenm### </td> 
+          </tr>
+        </for>
+      </tbody>
+    </table>
+
+  </div>
+
+</slice>
+
+<include src='template.htm'/>

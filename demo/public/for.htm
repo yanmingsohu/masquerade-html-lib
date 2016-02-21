@@ -1,0 +1,32 @@
+
+<slice define='body'>
+
+  <h1>Demo For</h1>
+
+  <slice define='loop'> <span>hello ###id###</span> </slice>
+
+  
+  <create to='array1' 
+      hello-s='world' 
+      iam-s='jym' 
+      welcome-s='masquerade' />
+
+  <div>### array1 ###</div>
+
+  <create to='array2' 
+      1-s='a' 
+      2-s='b' 
+      3-s='c' />
+
+  <for from="array1" save='a' index='i'>
+    <div> 1:###i###  ###a### </div>
+
+    <for from="array2" save='a' index='i'>
+      <li> 2:###i###  ###a### <slice ref='loop' id='abc'/> </li>
+    </for> 
+  </for> 
+
+</slice>
+
+<include src='template.htm'/>
+
