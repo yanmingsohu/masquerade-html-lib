@@ -1,12 +1,11 @@
-{
+﻿{
     "name": "masquerade-html-lib",
-    "version": "0.1.82",
+    "version": "0.1.83",
     "description": "html on server template",
     "main": "index.js",
     "scripts": {
         "test": "node test/index.js",
-        "start": "node index.js",
-        "prepublish": "node -e \"try{ require('ver--1')(); }catch(_){}\""
+        "start": "node index.js"
     },
     "repository": {
         "type": "git",
@@ -27,7 +26,6 @@
         "express": "^4.12.1",
         "java": "^0.6.0",
         "mas-plugin-md-lib": "*",
-        "mas-plugin-sql-lib": "*",
-        "ver--1": "^0.1.13"
+        "mas-plugin-sql-lib": "*"
     }
 }
