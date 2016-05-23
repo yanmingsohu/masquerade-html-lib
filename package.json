@@ -1,6 +1,6 @@
 ﻿{
     "name": "masquerade-html-lib",
-    "version": "0.1.83",
+    "version": "0.1.86",
     "description": "html on server template",
     "main": "index.js",
     "scripts": {
