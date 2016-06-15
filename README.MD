@@ -1,8 +1,9 @@
-# 渲染动态 html 页面 
+# 渲染动态 html 页面
 
 * 通过插件扩展功能
 * 全程使用 Buffer 且尽量减少内存复制
 * 静态文件最后修改日期缓存策略
+* 自定义文件获取器
 
 
 ## Install
@@ -51,7 +52,7 @@ http.createServer(mid).listen(80);
 
 * 配置文件中 masquerade.extname 指定的的扩展名称的文件作为模板进行解析
 * 模板中 `###A###` 的部分是 bird 表达式, 见下文
-* 标签分为三种: 
+* 标签分为三种:
   - 1. 普通 html 标签, 不做特殊处理, 可以在标签体或属性中嵌入 bird 表达式
   - 2. 系统标签, 这些标签有特殊的功能, 渲染结果也不是直观的, 具体见 [Html 模板特殊标签] 一节
   - 3. 用户自定义标签, 这些标签使用 HTML 语法写成, 放在 [/private/tag] 目录中, 见下文
@@ -119,13 +120,13 @@ http.createServer(mid).listen(80);
 ### if 判断
 
 `<if var="c" [not='true']></if>`
-*   如果条件为 true(默认) 则渲染标签体, 
+*   如果条件为 true(默认) 则渲染标签体,
     如果 not='true' 则条件取反
 
 ### api 发出 HTTP 请求
 
 `<api url='http://url/?parm' to='api1ret' [type='json/txt'] [method='get/post'] [exp='boolean']/>`
-*   请求一个 API, method 指定方法 (默认get), 
+*   请求一个 API, method 指定方法 (默认get),
     使用 type 指定的类型解析数据 (默认为 json)
     并把结果保存在 to 指定的变量中;
     exp=true 则 url 中允许表达式
@@ -200,6 +201,7 @@ context: { // [r155]
     expression: expression_complier   -- 编译并解析表达式的方法 (过时, 使用 parse)
     parse  : Function(String)         -- 编译一个字符串(其中可以有表达式), 返回的对象有 val(context) 可以取得结果
     baseurl: String                   -- 中间件解析器根路径
+    filepool: Object                  -- 系统文件池
 
     setHeader: function(name, value)  -- 设置 HTTP 应答头域的值
     getHeader: function(name)         -- 取得 HTTP 请求头域的值
@@ -208,17 +210,17 @@ context: { // [r155]
 
 [-- 只在当前标签范围中有效的属性: [r175]--]
     tag_scope: {
-        controler: { 
+        controler: {
             disable_sub()             -- 不渲染签体中的元素
             enable_sub()              -- (默认) 渲染标签体中的元素
         }        
-        
+
         body: [ Buffer1, Buffer2 ... BufferN ]
                                       -- 标签体中静态文字的缓冲对象, 允许修改
                                       -- buffer 中的数据, 但修改 body 本身无效
 
         attr: Object                  -- 标签中的属性
-        attr_str: String              -- 标签属性原始字符串 
+        attr_str: String              -- 标签属性原始字符串
         name: String                  -- 标签名
         selfend: bool                 -- 自结束标签为 true
     }
