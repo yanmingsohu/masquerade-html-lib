@@ -33,6 +33,13 @@
     > some
 
   </markdown>
+<script runat='server'>
+var path = '/t' + query.i + '.md';
+val('md_path', path);
+end();
+</script>
+###md_path###
+<include exp='true' src='md_path'/>
 </slice>
 
 <include src='template.htm'/>

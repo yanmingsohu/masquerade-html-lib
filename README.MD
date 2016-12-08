@@ -105,7 +105,7 @@ http.createServer(mid).listen(80);
 
 ### include 包含
 
-`<include src="/page/a.html" [private="false"]/>`
+`<include src="/page/a.html" [private="false"] [exp='false']/>`
 *   包含一个静态文件, 文件层级默认相对于 public 目录
     如果 private="true" 则相对于 /private/include 目录
 
@@ -207,6 +207,7 @@ context: { // [r155]
     getHeader: function(name)         -- 取得 HTTP 请求头域的值
     getVmContext: function()
     log : function(...)               -- 写日志
+    config : {}                       -- 读取运行时配置, runtime_cfg
 
 [-- 只在当前标签范围中有效的属性: [r175]--]
     tag_scope: {
