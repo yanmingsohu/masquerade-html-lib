@@ -12,6 +12,9 @@ module.exports.tool
 
 module.exports.mid 
     = require('./lib/mid.js');
+    
+module.exports.listen
+    = _listen;
 
 
 //
@@ -27,13 +30,26 @@ function exportForMix(app_pool, url_base, after_create) {
   var route = app_pool.addApp(mixer.native(mid));
   route.add(route_saver);
 }
+
+
+function _listen(port, _path, _cb) {
+  var http = require('http');
+  var mid = module.exports.mid(_path || '/');
+  http.createServer(mid).listen(80, _cb);
+  return {
+    http : http,
+    mid  : mid,
+  };
+}
   
 
 if (!module.parent) {
   var mixer = require('mixer-lib');
 
   var conf = {
-    whenLoad: exportForMix
+    whenLoad: function(app_pool) {
+      exportForMix(app_pool, null, null);
+    },
   };
 
   mixer.create_http_mix_server(conf);

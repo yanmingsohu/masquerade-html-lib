@@ -1,6 +1,6 @@
-﻿{
+{
     "name": "masquerade-html-lib",
-    "version": "0.3.2",
+    "version": "0.3.4",
     "description": "html on server template",
     "main": "index.js",
     "scripts": {
@@ -18,9 +18,9 @@
     "license": "ISC",
     "dependencies": {
         "configuration-lib": "^0.2.1",
-        "logger-lib": "^0.1.16",
+        "logger-lib": "^0.3.1",
         "mime": "^1.3.4",
-        "mixer-lib": "^0.1.17"
+        "mixer-lib": "^0.2.1"
     },
     "devDependencies": {
         "express": "^4.12.1",

@@ -3,32 +3,94 @@
 * 通过插件扩展功能
 * 全程使用 Buffer 且尽量减少内存复制
 * 静态文件最后修改日期缓存策略
-* 自定义文件获取器
+* 自定义文件获取器, 可以挂到自定义的网络文件系统
 
 
 ## Install
 
-`npm install masquerade-html-lib`
+`npm install masquerade-html-lib --save`
 
 
-## Usage
+## Demo
+
+
+### 快速启动服务
+
+```js
+var mas = require('masquerade-html-lib');
+var ret = mas.listen(80);
+```
+
+
+### 使用原生 http api:
 
 ```js
 var http = require('http');
 var mas = require('masquerade-html-lib');
-
-//
-// 当 `/www` url被调用时, mas 进行渲染, 这个路径是虚拟路径
-// 直接对应 [public] 目录中的文件
-//
 var mid = mas.mid('/www');
-//
-// 添加插件实现复杂标签, 见插件说明
-//
-mid.add_plugin(function());
-
 http.createServer(mid).listen(80);
 ```
+
+
+### 与 mixer-lib 结合使用的方法:
+
+```js
+var mixer = require('mixer-lib');
+var mas = require('masquerade-html-lib');
+
+mixer.create_http_mix_server({
+    whenLoad: function(app_pool) {
+        mas(app_pool, '/');
+    }
+});
+```
+
+
+## Api
+
+### var mas = require('masquerade-html-lib')
+
+    mas 本身是一个函数: `Function(Object app_pool, String baseurl, Function mid_created_cb(Mid mid))`
+    这个函数为 `mixer-lib` 设计; app_pool 是 mixer:whenLoad 的回调对象;
+    baseurl 服务路径, 当中间件被创建完成 mid_created_cb 会被调用并传递 mid 对象;
+
+#### mas.mid(String baseurl, Object _config, Bool _debug, FSObject _fs_lib)
+
+    baseurl 服务的路径, mas 将这个路径作为服务的根路径映射到 public 的本地路径上;
+    _config 配置参数, 设置为空则从配置文件中加载, 注意此时需要等待配置加载完成, 见 `configuration-lib`;
+    _debug  设置为 true 出错后将在客户端打印完整的程序堆栈 (这将泄漏本地路径);
+    _fs_lib 默认为系统 fs;
+    返回: Mid 对象
+    
+#### mas.listen(port, [path, callback])
+
+    在 port 端口上启动 http 服务, 并设置一个服务路径 path (默认 '/'), 
+    当服务器启动 callback 函数被调用, 返回 
+    `{ http : Class http.Server (HTTP)[https://nodejs.org/dist/latest-v6.x/docs/api/http.html], 
+      mid : Class Mid }`
+
+### Class Mid
+
+    这是一个实例化的中间件, 需要挂载到 http 服务器上, 每个实例都可以配置成不同的状态.
+
+#### Mid.add_plugin(info)
+
+    将插件放入服务中, 多个服务的插件配置可以是不同的, 创建插件见 '插件' 一节.
+    
+### 其他 api, 列出只作为完整性参考, 他们都是内部实现, 切可能变更接口
+
+#### mas.template.html_complier
+#### mas.template.parseHtmlStructure
+#### mas.tool.string_buf
+#### mas.tool.rendering
+#### mas.tool.expression_complier
+#### mas.tool.isSystemVar
+#### mas.tool.addSystemVar
+#### mas.tool.forEachSystemVar
+#### mas.tool.comment
+#### mas.tool.nextId
+#### mas.tool.parseExp
+#### mas.base.html_builder
 
 
 ## 目录结构
