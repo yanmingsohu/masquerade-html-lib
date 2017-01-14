@@ -54,19 +54,19 @@ mixer.create_http_mix_server({
     这个函数为 `mixer-lib` 设计; app_pool 是 mixer:whenLoad 的回调对象;
     baseurl 服务路径, 当中间件被创建完成 mid_created_cb 会被调用并传递 mid 对象;
 
-#### mas.mid(String baseurl, Object _config, Bool _debug, FSObject _fs_lib)
+#### mas.mid(String baseurl, Object config, Bool debug, FSObject fs_lib)
 
-    baseurl 服务的路径, mas 将这个路径作为服务的根路径映射到 public 的本地路径上;
-    _config 配置参数, 设置为空则从配置文件中加载, 注意此时需要等待配置加载完成, 见 `configuration-lib`;
-    _debug  设置为 true 出错后将在客户端打印完整的程序堆栈 (这将泄漏本地路径);
-    _fs_lib 默认为系统 fs;
+    baseurl  服务的路径, mas 将这个路径作为服务的根路径映射到 public 的本地路径上;  
+    config   配置参数, 设置为空则从配置文件中加载, 注意此时需要等待配置加载完成, 见 `configuration-lib`;  
+    debug    设置为 true 出错后将在客户端打印完整的程序堆栈 (这将泄漏本地路径);  
+    fs_lib   默认为系统 fs;  
     返回: Mid 对象
-    
+
 #### mas.listen(port, [path, callback])
 
-    在 port 端口上启动 http 服务, 并设置一个服务路径 path (默认 '/'), 
-    当服务器启动 callback 函数被调用, 返回 
-    `{ http : Class http.Server (HTTP)[https://nodejs.org/dist/latest-v6.x/docs/api/http.html], 
+    在 port 端口上启动 http 服务, 并设置一个服务路径 path (默认 '/'),
+    当服务器启动 callback 函数被调用, 返回
+    `{ http : Class http.Server (HTTP)[https://nodejs.org/dist/latest-v6.x/docs/api/http.html],
       mid : Class Mid }`
 
 ### Class Mid
@@ -76,7 +76,7 @@ mixer.create_http_mix_server({
 #### Mid.add_plugin(info)
 
     将插件放入服务中, 多个服务的插件配置可以是不同的, 创建插件见 '插件' 一节.
-    
+
 ### 其他 api, 列出只作为完整性参考, 他们都是内部实现, 切可能变更接口
 
 #### mas.template.html_complier
@@ -168,8 +168,9 @@ mixer.create_http_mix_server({
 ### include 包含
 
 `<include src="/page/a.html" [private="false"] [exp='false']/>`
-*   包含一个静态文件, 文件层级默认相对于 public 目录
-    如果 private="true" 则相对于 /private/include 目录
+*   包含一个静态文件, 如果以 '/' 开始文件层级默认相对于 public 目录,
+    如果以 './' 或非 '/' 开始则相对于当前文件目录.
+    如果 private="true" 则相对于 /private/include 目录, 忽略相对路径,
 
 ### for 循环
 

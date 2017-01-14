@@ -1,0 +1,15 @@
+<slice define='body'>
+  <div>dep1 ok</div>
+
+  <h3>引用相对路径中的文件:</h3>
+  <include src='./dep2/inc-dep.htm'/>
+
+  <h3>使用表达式引用相对路径中的文件</h3>
+  <create to='ifile' dir-s='./dep2/inc-dep.htm' demo-s='demo.htm' />
+  <include src='ifile.dir' exp='true'/>
+
+  <h3>使用表达式引用私有目录文件:</h3>
+  <include src='ifile.demo' exp='true' private='true'/>
+</slice>
+
+<include src='/template.htm'/>
