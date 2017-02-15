@@ -1,0 +1,52 @@
+<slice define='body'>
+
+<div>
+###query###
+</div>
+
+<br/><br/>
+<a href='if-else.htm?a=11'>A</a>
+<a href='if-else.htm?a=0'>B</a>
+<a href='if-else.htm?a=11&c=1'>A and C</a>
+<a href='if-else.htm?d=1'>D</a>
+<a href='if-else.htm?d=1&a=11'>D and A</a>
+
+<br/><br/><br/>
+<div>
+  <span>if <b>CLICK A</b> is set display this:<span>
+  <if var='query.a=="1"+1'>
+    <h1>A is click!</h1>
+    <if var='query.c'><h1>C is click!</h1></if>
+    <else>C not set</else>
+  </if>
+</div>
+
+<br/><br/><br/>
+<div>
+  <span>if <b>CLICK B</b> or not set A display this:<span>
+  <else>
+    <h1>not Set A</h1>
+  </else>
+</div>
+
+<br/><br/><br/>
+<div>
+  <span>if <b>CLICK D</b> set display this:<span>
+  <if var='query.d' not='true'>
+  </if>
+  <else>
+    <h1>D is click!</h1>
+  </else>
+</div>
+
+<br/><br/><br/>
+<if var='0'>
+  display is fail !
+  <else>display is fail !</else>
+</if>
+<else>display is ok</else>
+
+
+</slice>
+
+<include src='template.htm'/>

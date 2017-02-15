@@ -4,12 +4,12 @@
 ###query###
 </div>
 <a href='if.htm?a=0'>not set</a>
-<a href='if.htm?a=1'>set</a>
+<a href='if.htm?a=11'>set</a>
 
 <br/><br/><br/><br/>
 <div>
   <span>if query.a is set display this:<span>
-  <if var='query.a'>
+  <if var='query.a=="1"+1'>
     <h1>query.a is set!</h1>
   </if>
 </div>

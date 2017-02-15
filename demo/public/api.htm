@@ -3,12 +3,12 @@
 
 	<slice define='api'>
 	  <api url='http://www.baidu.com' to='api1ret' type='txt' method='get'/>
-  <div>
-    <h1>baidu</h1>
-    <textarea style='width: 90%; height: 300px'>
-    ### api1ret ###
-    </textarea>
-  </div>
+	  <div>
+	    <h1>baidu</h1>
+	    <textarea style='width: 90%; height: 300px'>
+	    ### api1ret ###
+	    </textarea>
+	  </div>
 	</slice>
 
 	<wait a='1'>abc</wait>
@@ -16,11 +16,12 @@
 
 	<div>over</div>
 
-  <api url='http://www.facebook.com' to='api1ret' type='txt' method='get'/>
+  <api url='http://www.facebook.com' to='api2ret' type='txt'
+			method='get' timeout='4'/>
+	<textarea style='width: 90%; height: 100px'>
+	### api2ret ###
+	</textarea>
 </slice>
 
 
 <include src='template.htm'/>
-
-
-
