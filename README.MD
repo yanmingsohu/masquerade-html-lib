@@ -1,7 +1,7 @@
 # 渲染动态 html 页面
 
 > masquerade version: 0.3.8
-> edit: 2017.2.8
+> edit: 2017.3.17
 
 * 通过插件扩展功能
 * 全程使用 Buffer 且尽量减少内存复制
@@ -46,6 +46,13 @@ mixer.create_http_mix_server({
     }
 });
 ```
+
+
+# HTTP 代理
+
+当请求一个路径为目录时, 将尝试搜索默认主页文件 (在配置文件 default_page 配置中), 如果
+中间有代理层, 将跳转到错误的地址, 此时设置 http 头域 `proxy-original-url` 为代理的原
+始地址可以解决这个跳转错误.
 
 
 # Html 模板说明
@@ -96,8 +103,9 @@ mixer.create_http_mix_server({
 
 ### slice 切片
 
-`<slice ref='name' attr1='' attr2='' noerror='1' [exp='true'] />`
+`<slice ref='name' attr1='' attr2='' noerror='1' [exp='true'] />`  
 `<slice define='name' noerror='1' [exp='true']>BODY</slice>`
+
 *   创建一个切片, 如果有 ref 属性, 则不能有标签体, 用于引用一个切片到当前位置
     并且 扩展属性都会传入上下文供给 <slice define/> 的 body 中使用
     如果有 define 属性, 则必须有标签体, 切片只有在被引用的时候才会渲染
@@ -106,14 +114,16 @@ mixer.create_http_mix_server({
 ### include 包含
 
 `<include src="/page/a.html" [private="false"] [exp='false']/>`
+
 *   包含一个静态文件, 如果以 '/' 开始文件层级默认相对于 public 目录,
     如果以 './' 或非 '/' 开始则相对于当前文件目录.
     如果 private="true" 则相对于 /private/include 目录, 忽略相对路径,
 
 ### for 循环
 
-`<for from="array" save='b'  index='i'> ###b### ###i###</for> `
+`<for from="array" save='b'  index='i'> ###b### ###i###</for> `  
 `<for from="object" save='c' index='i'> ###c### ###i###</for> `
+
 *   循环渲染 标签体
     每次循环的变量都保存在 save 指定的变量中, 之后可以通过表达式取出
     每次循环的索引保存在 index 指定的变量中
@@ -121,18 +131,21 @@ mixer.create_http_mix_server({
 ### if 判断
 
 `<if var="c" [not='true']></if>`
+
 *   如果条件为 true(默认) 则渲染标签体,
     如果 not='true' 则条件取反, var 支持复杂表达式.
 
 ### else
 
 `<else></else>`
+
 *   如果 else 之配对的 if 被渲染则 else 不会渲染, 反之则渲染;
     else 必须与 if 配对且唯一配对, 未配对的 else 永远不被渲染;
 
 ### api 发出 HTTP 请求
 
 `<api url='http://url/?parm' to='api1ret' [type='json/txt'] [method='get/post'] [exp='boolean'] [timeout='5']/>`
+
 *   请求一个 API, method 指定方法 (默认get),
     使用 type 指定的类型解析数据 (默认为 json), 并把结果保存在 to 指定的变量中;
     exp=true 则 url 中允许表达式, 如果请求出错在 to 变量上绑定一个 Error 对象;
@@ -141,6 +154,7 @@ mixer.create_http_mix_server({
 ### create 创建对象
 
 `<create to='objname' varname1-s='string' varname2-e='express' varname3-n='9' />`
+
 *   创建一个对象 Object, 放入上下文的 to 指定的变量中
     参数的说明: 由 nnn-T 形成的参数列表 nnn 指定一个属性, T 指定数据类型
     T 的有效类型: 's': 字符串, 'e':表达式, 'i':整数, 'f':浮点数
@@ -149,6 +163,7 @@ mixer.create_http_mix_server({
 ### set 设置变量, 或设置对象属性
 
 `<set to='varname' [attr='attrname'] value='abc' [exp='false']/>`
+
 *   设置 to 指定的属性的 attr 值为 value,
     如果 attr 未设置, 则直接修改 to 指定的变量的值
     如果 exp==true (默认false), 则从上下文中取数据
@@ -157,11 +172,13 @@ mixer.create_http_mix_server({
 ### del 删除变量/对象
 
 `<del to='varname'/>`
+
 *   删除上下文中的变量, 不会抛出异常, 但无法删除一些系统变量
 
 ### script 脚本
 
 `<script [src='/script1.js'] [runat='server/client']/>`
+
 *   如果 runat==server (默认是client)
     设置了 src 属性则运行一个服务端脚本文件, 相对于 /private/script 目录,
     否则不设置 src 可以直接写服务端脚本.
@@ -176,34 +193,38 @@ mixer.create_http_mix_server({
     - `val(name [, value])`, name 是变量名, 设置 value 则 set 变量, 否则 get 变量.
     - `end()`, 脚本运行完成, 脚本中必须调用这个方法, 否则请求不返回.
     - `write(Object)`, 写出字符串到页面, 必须在页面渲染完成前调用, (不能在 setTimeout 中调用).
-    - `require(name)`, 引用一个模块, 被引用模块在 /private/script 目录中存放.
+    - `require(name, cb)`, 引用一个模块, 被引用模块在 /private/script 目录中存放.
     - `console.log()`, 在控制台打印消息.
 
 ### pit 渲染标签体
 
 `<pit/>`
+
 *   在用户自定义标签库中, 渲染调用这个标签库时的标签体
 
 ### never 不会被渲染
 
 `<never></never>`
+
 *   不会进行任何处理的标签, 用于写注释
 
 ### stop 停止渲染
 
 `<stop/>`
+
 *   无条件停止渲染.
 
-### !! 未完成的功能
+
+### [未完成]
 
 `<error msg=''/>`
-*   [未完成] 抛出一个异常, 并停止渲染
+*   抛出一个异常, 并停止渲染
 
 `<log msg='' [lv='info']/>`
-*   [未完成] 记录日志, lv == info (默认), lv 可以是 debug/warn/error/info
+*   记录日志, lv == info (默认), lv 可以是 debug/warn/error/info
 
 `<plain src='/index.html'/>`
-*   [未完成] 将文件作为普通文本输出到浏览器
+*   将文件作为普通文本输出到浏览器
 
 
 # Api

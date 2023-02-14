@@ -27,14 +27,15 @@ if (!this.i) {
 	this.i = 0 ;
 }
 
-var retFn = require('require.js');
-write(retFn(++this.i));
+require('require.js', function(err, retFn) {
 
-var msg = '<br/>this is Private script';
-console.info(msg);
-write(msg);
-write('</br>')
-write(JSON.stringify(this));
+	write(retFn(++this.i));
 
+	var msg = '<br/>this is Private script';
+	console.info(msg);
+	write(msg);
+	write('</br>')
+	write(JSON.stringify(this));
 
-end();
+	end();
+});
